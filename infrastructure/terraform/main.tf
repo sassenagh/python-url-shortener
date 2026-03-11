@@ -10,7 +10,12 @@ resource "google_container_node_pool" "primary_nodes" {
   cluster    = google_container_cluster.primary.name
   location   = var.region
 
-  node_count = 1
+  initial_node_count = 2
+
+  autoscaling {
+    min_node_count = 2
+    max_node_count = 3
+  }
 
   node_config {
     machine_type = "e2-micro"

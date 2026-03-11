@@ -1,3 +1,13 @@
+resource "google_project_service" "container" {
+  project = var.project_id
+  service = "container.googleapis.com"
+}
+
+resource "google_project_service" "compute" {
+  project = var.project_id
+  service = "compute.googleapis.com"
+}
+
 resource "google_container_cluster" "primary" {
   name     = var.cluster_name
   location = var.region

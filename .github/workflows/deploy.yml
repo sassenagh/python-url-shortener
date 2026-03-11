@@ -13,23 +13,35 @@ jobs:
       - run: echo "Init process started at $(date)"
 
       - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Authenticate to GCP
-        uses: google-github-actions/auth@v1
-        with:
-          credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+        uses: actions/checkout@v4
 
       - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
+        uses: hashicorp/setup-terraform@v3
 
       - name: Terraform Init
         run: terraform init
-        working-directory: infrastructure/terraform
 
-      - name: Terraform Apply
-        run: |
-          terraform apply -auto-approve \
-          -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-          -var="region=${{ secrets.GCP_REGION }}"
-        working-directory: infrastructure/terraform
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve
+
+      # - name: Checkout
+      #   uses: actions/checkout@v3
+
+      # - name: Authenticate to GCP
+      #   uses: google-github-actions/auth@v1
+      #   with:
+      #     credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+
+      # - name: Setup Terraform
+      #   uses: hashicorp/setup-terraform@v2
+
+      # - name: Terraform Init
+      #   run: terraform init
+      #   working-directory: infrastructure/terraform
+
+      # - name: Terraform Apply
+      #   run: |
+      #     terraform apply -auto-approve \
+      #     -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+      #     -var="region=${{ secrets.GCP_REGION }}"
+      #   working-directory: infrastructure/terraform

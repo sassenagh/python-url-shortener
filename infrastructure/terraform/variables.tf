@@ -3,7 +3,7 @@ variable "project_id" {
 }
 
 variable "region" {
-  default = "europe-west1-b"
+  default = "us-central1-a"
   type = string
 }
 

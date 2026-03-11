@@ -28,7 +28,8 @@ jobs:
         working-directory: infrastructure/terraform
 
       - name: Terraform Apply
-        run: terraform apply -auto-approve \
+        run: |
+          terraform apply -auto-approve \
           -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
           -var="region=${{ secrets.GCP_REGION }}"
         working-directory: infrastructure/terraform

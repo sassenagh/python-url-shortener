@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - run: echo "Init process started at $(date)"
+
       - name: Checkout
         uses: actions/checkout@v3
 

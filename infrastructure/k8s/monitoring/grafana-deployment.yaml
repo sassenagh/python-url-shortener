@@ -8,10 +8,13 @@ spec:
   selector:
     matchLabels:
       app: grafana
+
   template:
     metadata:
       labels:
         app: grafana
+
+    spec:
       containers:
         - name: grafana
           image: grafana/grafana:10.4.7
@@ -28,6 +31,7 @@ spec:
                 secretKeyRef:
                   name: grafana-secrets
                   key: admin-password
+
 ---
 apiVersion: v1
 kind: Service

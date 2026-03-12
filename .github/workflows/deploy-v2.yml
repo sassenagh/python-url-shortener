@@ -54,4 +54,4 @@ jobs:
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Skip Terraform
-        run: echo "✅ Cluster ya existe. App desplegada arriba."
+        run: echo "Cluster already exists, skipping Terraform apply"

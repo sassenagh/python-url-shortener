@@ -47,11 +47,11 @@ jobs:
           GRAFANA_PASS: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
         run: |
           # App
-          kubectl apply -f k8s/deployment.yaml
-          kubectl apply -f k8s/service.yaml
+          kubectl apply -f ./k8s/deployment.yaml
+          kubectl apply -f ./k8s/service.yaml
 
           # Monitoring
-          kubectl apply -f k8s/monitoring/
+          kubectl apply -f ./k8s/monitoring/
 
           # Grafana secret (desde GitHub Secrets)
           kubectl create secret generic grafana-secrets \

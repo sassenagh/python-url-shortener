@@ -46,3 +46,14 @@ jobs:
             --from-literal=admin-user="$GRAFANA_USER" \
             --from-literal=admin-password="$GRAFANA_PASS" \
             --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: infrastructure/terraform
+
+      - name: Terraform Plan (solo info, NO apply)
+        run: terraform plan
+        working-directory: infrastructure/terraform

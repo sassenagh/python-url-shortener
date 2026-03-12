@@ -46,6 +46,9 @@ jobs:
           GRAFANA_USER: ${{ secrets.GRAFANA_ADMIN_USER }}
           GRAFANA_PASS: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
         run: |
+          kubectl create namespace url-shortener-ns --dry-run=client -o yaml | kubectl apply -f -
+          kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+
           # App
           kubectl apply -f infrastructure/k8s/deployment.yaml
           kubectl apply -f infrastructure/k8s/service.yaml

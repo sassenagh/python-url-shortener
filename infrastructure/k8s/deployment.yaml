@@ -2,7 +2,6 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: url-shortener
-  namespace: url-shortener
 
 spec:
   replicas: 1

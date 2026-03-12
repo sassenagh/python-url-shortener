@@ -20,6 +20,20 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: infrastructure/terraform
+
+      - name: Terraform Apply
+        run: |
+          terraform apply -auto-approve \
+          -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
+          -var="region=${{ secrets.GCP_REGION }}"
+        working-directory: infrastructure/terraform
+
       - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
@@ -31,27 +45,17 @@ jobs:
         env:
           GRAFANA_USER: ${{ secrets.GRAFANA_ADMIN_USER }}
           GRAFANA_PASS: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
-        working-directory: .
         run: |
-          echo "=== CREANDO NAMESPACES ==="
-          kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
-
-          echo "=== DESPLEGANDO APP ==="
+          # App
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
 
-          echo "=== ESPERANDO EXTERNAL IP ==="
-          kubectl get svc url-shortener-service -w
-
-          echo "=== MONITORING ==="
+          # Monitoring
           kubectl apply -f k8s/monitoring/
 
-          echo "=== GRAFANA SECRET ==="
+          # Grafana secret (desde GitHub Secrets)
           kubectl create secret generic grafana-secrets \
             --namespace=monitoring \
             --from-literal=admin-user="$GRAFANA_USER" \
             --from-literal=admin-password="$GRAFANA_PASS" \
             --dry-run=client -o yaml | kubectl apply -f -
-
-      - name: Skip Terraform
-        run: echo "Cluster already exists, skipping Terraform apply"

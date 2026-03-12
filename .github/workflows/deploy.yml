@@ -33,14 +33,15 @@ jobs:
           GRAFANA_PASS: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
         working-directory: .
         run: |
-          # App
+          echo "Deploying app..."
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
+          kubectl get svc url-shortener-service
 
-          # Monitoring
+          echo "Deploying monitoring..."
           kubectl apply -f k8s/monitoring/
 
-          # Grafana secret
+          echo "Creating Grafana secret..."
           kubectl create secret generic grafana-secrets \
             --namespace=monitoring \
             --from-literal=admin-user="$GRAFANA_USER" \
@@ -48,12 +49,15 @@ jobs:
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Setup Terraform
+        if: false
         uses: hashicorp/setup-terraform@v2
 
       - name: Terraform Init
+        if: false
         run: terraform init
         working-directory: infrastructure/terraform
 
-      - name: Terraform Plan (solo info, NO apply)
+      - name: Terraform Plan
+        if: false
         run: terraform plan
         working-directory: infrastructure/terraform

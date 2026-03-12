@@ -1,0 +1,5 @@
+[
+  "tests/test_api.py::test_health",
+  "tests/test_api.py::test_shorten_url",
+  "tests/test_api.py::test_shorten_url_with_long_url"
+]

@@ -1,17 +1,32 @@
 version: "3.9"
 
 services:
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: redis-server --save "" --appendonly no
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    security_opt:
+      - seccomp:unconfined
 
   tests:
     build: .
-    command: pytest tests/ -v
+    command: sh -c "while ! timeout 1 bash -c 'cat < /dev/null > /dev/tcp/redis/6379'; do echo 'waiting for redis...'; sleep 2; done; pytest tests/ -v"
     environment:
       ENV: test
+      REDIS_URL: redis://redis:6379/0
       PIP_NO_INPUT: 1
       PIP_DISABLE_PIP_VERSION_CHECK: 1
       PIP_NO_CACHE_DIR: 1
     platform: linux/amd64
+    depends_on:
+      redis:
+        condition: service_healthy
     volumes:
       - .:/app
-      - /app/__pycache__
-      - /app/.pytest_cache

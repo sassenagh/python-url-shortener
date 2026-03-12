@@ -33,3 +33,29 @@ jobs:
           -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
           -var="region=${{ secrets.GCP_REGION }}"
         working-directory: infrastructure/terraform
+
+      - name: Get GKE credentials
+        uses: google-github-actions/get-gke-credentials@v1
+        with:
+          cluster_name: url-shortener-cluster
+          location: ${{ secrets.GCP_REGION }}
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      - name: Deploy App & Monitoring
+        env:
+          GRAFANA_USER: ${{ secrets.GRAFANA_ADMIN_USER }}
+          GRAFANA_PASS: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+        run: |
+          # App
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+
+          # Monitoring
+          kubectl apply -f k8s/monitoring/
+
+          # Grafana secret (desde GitHub Secrets)
+          kubectl create secret generic grafana-secrets \
+            --namespace=monitoring \
+            --from-literal=admin-user="$GRAFANA_USER" \
+            --from-literal=admin-password="$GRAFANA_PASS" \
+            --dry-run=client -o yaml | kubectl apply -f -

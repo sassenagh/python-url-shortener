@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
-from app.routes import urls
+from app.routes import router
 import time
+import asyncio
 
 app = FastAPI(title="URL Shortener API")
 
@@ -10,8 +11,12 @@ startup_time = time.time()
 @app.on_event("startup")
 async def startup_event():
     global is_ready
-    time.sleep(2)
+    await asyncio.sleep(2)
     is_ready = True
+
+@app.get("/")
+async def health_check():
+    return {"status": "ok"}
 
 @app.get("/health")
 async def health_check():
@@ -23,4 +28,4 @@ async def readiness_check():
         raise HTTPException(status_code=503, detail="Service not ready")
     return {"status": "ready", "uptime": time.time() - startup_time}
 
-app.include_router(urls.router)
+app.include_router(router)

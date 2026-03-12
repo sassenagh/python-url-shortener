@@ -20,20 +20,6 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_CREDENTIALS }}
 
-      - name: Setup Terraform
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Terraform Init
-        run: terraform init
-        working-directory: infrastructure/terraform
-
-      - name: Terraform Apply
-        run: |
-          terraform apply -auto-approve \
-          -var="project_id=${{ secrets.GCP_PROJECT_ID }}" \
-          -var="region=${{ secrets.GCP_REGION }}"
-        working-directory: infrastructure/terraform
-
       - name: Get GKE credentials
         uses: google-github-actions/get-gke-credentials@v1
         with:
@@ -45,15 +31,16 @@ jobs:
         env:
           GRAFANA_USER: ${{ secrets.GRAFANA_ADMIN_USER }}
           GRAFANA_PASS: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
+        working-directory: .
         run: |
           # App
-          kubectl apply -f ./k8s/deployment.yaml
-          kubectl apply -f ./k8s/service.yaml
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
 
           # Monitoring
-          kubectl apply -f ./k8s/monitoring/
+          kubectl apply -f k8s/monitoring/
 
-          # Grafana secret (desde GitHub Secrets)
+          # Grafana secret
           kubectl create secret generic grafana-secrets \
             --namespace=monitoring \
             --from-literal=admin-user="$GRAFANA_USER" \

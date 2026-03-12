@@ -33,31 +33,25 @@ jobs:
           GRAFANA_PASS: ${{ secrets.GRAFANA_ADMIN_PASSWORD }}
         working-directory: .
         run: |
-          echo "Deploying app..."
+          echo "=== CREANDO NAMESPACES ==="
+          kubectl create namespace monitoring --dry-run=client -o yaml | kubectl apply -f -
+
+          echo "=== DESPLEGANDO APP ==="
           kubectl apply -f k8s/deployment.yaml
           kubectl apply -f k8s/service.yaml
-          kubectl get svc url-shortener-service
 
-          echo "Deploying monitoring..."
+          echo "=== ESPERANDO EXTERNAL IP ==="
+          kubectl get svc url-shortener-service -w
+
+          echo "=== MONITORING ==="
           kubectl apply -f k8s/monitoring/
 
-          echo "Creating Grafana secret..."
+          echo "=== GRAFANA SECRET ==="
           kubectl create secret generic grafana-secrets \
             --namespace=monitoring \
             --from-literal=admin-user="$GRAFANA_USER" \
             --from-literal=admin-password="$GRAFANA_PASS" \
             --dry-run=client -o yaml | kubectl apply -f -
 
-      - name: Setup Terraform
-        if: false
-        uses: hashicorp/setup-terraform@v2
-
-      - name: Terraform Init
-        if: false
-        run: terraform init
-        working-directory: infrastructure/terraform
-
-      - name: Terraform Plan
-        if: false
-        run: terraform plan
-        working-directory: infrastructure/terraform
+      - name: Skip Terraform
+        run: echo "✅ Cluster ya existe. App desplegada arriba."

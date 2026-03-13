@@ -1,31 +1,47 @@
 from fastapi import FastAPI, HTTPException
+from app.config import settings
+from app.redis_client import create_redis_client
 from app.routes import router
+from contextlib import asynccontextmanager
 import time
-import asyncio
-
-app = FastAPI(title="URL Shortener API")
 
 is_ready = False
 startup_time = time.time()
 
-@app.on_event("startup")
-async def startup_event():
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
     global is_ready
-    await asyncio.sleep(2)
+
+    app.state.redis = create_redis_client(settings.REDIS_URL)
     is_ready = True
 
+    yield
+
+    app.state.redis.close()
+
+
+app = FastAPI(
+    title="URL Shortener API",
+    lifespan=lifespan
+)
+
+
 @app.get("/")
-async def health_check():
+async def root():
     return {"status": "ok"}
 
+
 @app.get("/health")
-async def health_check():
+async def health():
     return {"status": "ok"}
+
 
 @app.get("/ready")
 async def readiness_check():
     if not is_ready:
         raise HTTPException(status_code=503, detail="Service not ready")
     return {"status": "ready", "uptime": time.time() - startup_time}
+
 
 app.include_router(router)

@@ -53,12 +53,12 @@ jobs:
           kubectl apply -f infrastructure/k8s/deployment.yaml
           kubectl apply -f infrastructure/k8s/service.yaml
 
-          # Monitoring
-          kubectl apply -f infrastructure/k8s/monitoring/
+          # # Monitoring
+          # kubectl apply -f infrastructure/k8s/monitoring/
 
-          # Grafana secret
-          kubectl create secret generic grafana-secrets \
-            --namespace=monitoring \
-            --from-literal=admin-user="$GRAFANA_USER" \
-            --from-literal=admin-password="$GRAFANA_PASS" \
-            --dry-run=client -o yaml | kubectl apply -f -
+          # # Grafana secret
+          # kubectl create secret generic grafana-secrets \
+          #   --namespace=monitoring \
+          #   --from-literal=admin-user="$GRAFANA_USER" \
+          #   --from-literal=admin-password="$GRAFANA_PASS" \
+          #   --dry-run=client -o yaml | kubectl apply -f -

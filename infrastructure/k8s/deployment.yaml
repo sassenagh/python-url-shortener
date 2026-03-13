@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
         - name: url-shortener
-          image: sassenagh/python-url-shortener:latest
+          image: us-central1-docker.pkg.dev/python-url-shortener-489910/url-shortener-repo/python-url-shortener:latest
           ports:
             - containerPort: 8000
           resources:

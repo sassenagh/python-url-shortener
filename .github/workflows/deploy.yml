@@ -41,6 +41,19 @@ jobs:
           location: ${{ secrets.GCP_REGION }}
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
+      - name: Wait for cluster
+        run: |
+          for i in {1..30}; do
+            kubectl get nodes && break
+            sleep 10
+          done
+
+      - name: Debug cluster
+        run: |
+          kubectl config current-context
+          kubectl get nodes
+          kubectl get ns
+
       - name: Deploy App & Monitoring
         env:
           GRAFANA_USER: ${{ secrets.GRAFANA_ADMIN_USER }}
@@ -53,12 +66,16 @@ jobs:
           kubectl apply -f infrastructure/k8s/deployment.yaml
           kubectl apply -f infrastructure/k8s/service.yaml
 
-          # # Monitoring
-          # kubectl apply -f infrastructure/k8s/monitoring/
+          # Monitoring
+          kubectl apply -f infrastructure/k8s/monitoring/
 
-          # # Grafana secret
-          # kubectl create secret generic grafana-secrets \
-          #   --namespace=monitoring \
-          #   --from-literal=admin-user="$GRAFANA_USER" \
-          #   --from-literal=admin-password="$GRAFANA_PASS" \
-          #   --dry-run=client -o yaml | kubectl apply -f -
+          # Grafana secret
+          kubectl create secret generic grafana-secrets \
+            --namespace=monitoring \
+            --from-literal=admin-user="$GRAFANA_USER" \
+            --from-literal=admin-password="$GRAFANA_PASS" \
+            --dry-run=client -o yaml | kubectl apply -f -
+
+      - name: Debug resources
+        run: |
+          kubectl get all -A

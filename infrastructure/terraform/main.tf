@@ -5,7 +5,7 @@ resource "google_container_cluster" "primary" {
   initial_node_count       = 1
 
     node_config {
-    machine_type = "e2-micro"
+    machine_type = "e2-medium"
     disk_type    = "pd-ssd"
     disk_size_gb = 15
   }

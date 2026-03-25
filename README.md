@@ -3,6 +3,7 @@
 ![Python](https://img.shields.io/badge/python-3.11-blue)
 ![Docker](https://img.shields.io/badge/docker-containerized-blue)
 ![Kubernetes](https://img.shields.io/badge/kubernetes-deployed-blue)
+![GCP](https://img.shields.io/badge/google%20cloud-GCP-blue)
 ![Terraform](https://img.shields.io/badge/terraform-infrastructure-purple)
 ![License](https://img.shields.io/badge/license-MIT-green)
 

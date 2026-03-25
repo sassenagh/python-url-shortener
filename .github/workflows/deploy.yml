@@ -1,7 +1,14 @@
 name: Deploy to GCP
 
 on:
+  workflow_dispatch:
   push:
+    paths:
+      - Dockerfile
+      - requirements.txt
+      - "app/**"
+      - "infrastructure/k8s/**"
+      - "infrastructure/terraform/**"
     branches:
       - master
 
